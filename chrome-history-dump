@@ -1,0 +1,14 @@
+#!/bin/bash
+
+
+sqlite3 /Users/$USER/Library/Application\ Support/Google/Chrome/Default/History \
+"SELECT urls.visit_count, urls.url, datetime(((urls.last_visit_time-11644473600000000)/1000000),'unixepoch','localtime') as last_visit_time FROM urls, visits \
+WHERE  urls.id = visits.url" > /tmp/$$.raw_dump
+
+cat /tmp/$$.raw_dump | sed s-https://-- | sed s-http://-- | sed s-/.*\|-\|- > /tmp/$$.urls
+cat /tmp/$$.urls | awk -F\| '{print $2}' | sort -u > /tmp/$$.hostnames.sorted
+wc -l /tmp/$$.*
+
+
+
+####SELECT urls.url, urls.title, urls.visit_count, urls.typed_count, datetime(((urls.last_visit_time-11644473600000000)/1000000),'unixepoch','localtime') as last_visit_time, urls.hidden, datetime(((visits.visit_time-11644473600000000)/1000000),'unixepoch','localtime') as visit_time, visits.from_visit, visits.transition FROM urls, visits WHERE urls.id = visits.url
